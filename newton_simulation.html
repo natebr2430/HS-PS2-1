@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newton's Second Law Simulation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    label, input {
+      margin: 10px 0;
+      display: block;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Newton's Second Law Virtual Lab</h1>
+  <p>Adjust the mass and force to see how they affect acceleration (F = ma).</p>
+
+  <label for="mass">Mass (kg):</label>
+  <input type="range" id="mass" min="0.5" max="5" step="0.1" value="2">
+  <span id="massVal">2</span> kg
+
+  <label for="force">Force (N):</label>
+  <input type="range" id="force" min="0" max="50" step="1" value="10">
+  <span id="forceVal">10</span> N
+
+  <label>
+    <input type="checkbox" id="friction"> Include friction (5 N)
+  </label>
+
+  <h2>Results</h2>
+  <p>Acceleration: <span id="acceleration">0</span> m/s²</p>
+  <canvas id="graph" width="600" height="400"></canvas>
+
+  <script>
+    const massInput = document.getElementById('mass');
+    const forceInput = document.getElementById('force');
+    const frictionCheck = document.getElementById('friction');
+    const accelerationSpan = document.getElementById('acceleration');
+    const massVal = document.getElementById('massVal');
+    const forceVal = document.getElementById('forceVal');
+    const canvas = document.getElementById('graph');
+    const ctx = canvas.getContext('2d');
+
+    function updateSimulation() {
+      const mass = parseFloat(massInput.value);
+      const force = parseFloat(forceInput.value);
+      const friction = frictionCheck.checked ? 5 : 0;
+      const netForce = force - friction;
+      const acceleration = (netForce / mass).toFixed(2);
+
+      accelerationSpan.textContent = acceleration;
+      massVal.textContent = mass;
+      forceVal.textContent = force;
+
+      drawGraph(force, mass, acceleration);
+    }
+
+    function drawGraph(force, mass, acceleration) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#000';
+      ctx.font = '16px Arial';
+      ctx.fillText(`Force: ${force} N`, 20, 20);
+      ctx.fillText(`Mass: ${mass} kg`, 20, 40);
+      ctx.fillText(`Acceleration: ${acceleration} m/s²`, 20, 60);
+
+      // Visualize relationship: F = ma as a bar chart
+      ctx.fillStyle = 'steelblue';
+      ctx.fillRect(100, 300 - force * 5, 50, force * 5);
+      ctx.fillStyle = 'orange';
+      ctx.fillRect(200, 300 - mass * 50, 50, mass * 50);
+      ctx.fillStyle = 'green';
+      ctx.fillRect(300, 300 - acceleration * 50, 50, acceleration * 50);
+
+      ctx.fillStyle = '#000';
+      ctx.fillText('Force', 100, 320);
+      ctx.fillText('Mass', 200, 320);
+      ctx.fillText('Accel.', 300, 320);
+    }
+
+    massInput.addEventListener('input', updateSimulation);
+    forceInput.addEventListener('input', updateSimulation);
+    frictionCheck.addEventListener('change', updateSimulation);
+
+    updateSimulation();
+  </script>
+</body>
+</html>
